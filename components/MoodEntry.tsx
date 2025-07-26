@@ -97,7 +97,7 @@ export const MoodEntry: React.FC<MoodEntryProps> = ({
               Catatan:
             </Text>
             <Text variant="bodyMedium" style={[styles.notesText, { color: theme.colors.onSurface }]}>
-              "{entry.notes}"
+              &quot;{entry.notes}&quot;
             </Text>
           </View>
         )}
