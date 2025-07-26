@@ -12,7 +12,7 @@ export interface Activity {
   id: string;
   name: string;
   emoji: string;
-  category: 'work' | 'health' | 'social' | 'hobby' | 'other';
+  category: "work" | "health" | "social" | "hobby" | "other";
 }
 
 export interface MoodStats {
