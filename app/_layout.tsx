@@ -1,13 +1,17 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { PaperProvider, MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { databaseService } from '../lib/database';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import "react-native-reanimated";
+import { PaperProvider, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { databaseService } from "../lib/database";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -15,7 +19,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   useEffect(() => {
@@ -33,8 +37,8 @@ export default function RootLayout() {
     return null;
   }
 
-  const paperTheme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
-  const navigationTheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+  const paperTheme = colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme;
+  const navigationTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
 
   return (
     <PaperProvider theme={paperTheme}>
