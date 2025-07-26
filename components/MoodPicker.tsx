@@ -1,8 +1,13 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
-import Animated, { useAnimatedStyle, withSpring, useSharedValue, withTiming } from 'react-native-reanimated';
-import { MOODS } from '../constants/Moods';
+import React from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, useTheme } from "react-native-paper";
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { MOODS } from "../constants/Moods";
 
 interface MoodPickerProps {
   selectedMood: number | null;
@@ -11,7 +16,10 @@ interface MoodPickerProps {
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-export const MoodPicker: React.FC<MoodPickerProps> = ({ selectedMood, onMoodSelect }) => {
+export const MoodPicker: React.FC<MoodPickerProps> = ({
+  selectedMood,
+  onMoodSelect,
+}) => {
   const theme = useTheme();
   const scaleValues = MOODS.map(() => useSharedValue(1));
 
@@ -24,10 +32,13 @@ export const MoodPicker: React.FC<MoodPickerProps> = ({ selectedMood, onMoodSele
 
   return (
     <View style={styles.container}>
-      <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
+      <Text
+        variant="titleMedium"
+        style={[styles.title, { color: theme.colors.onSurface }]}
+      >
         Bagaimana perasaanmu hari ini?
       </Text>
-      
+
       <View style={styles.moodContainer}>
         {MOODS.map((mood, index) => {
           const animatedStyle = useAnimatedStyle(() => ({
@@ -35,7 +46,7 @@ export const MoodPicker: React.FC<MoodPickerProps> = ({ selectedMood, onMoodSele
           }));
 
           const isSelected = selectedMood === mood.value;
-          
+
           return (
             <AnimatedTouchable
               key={mood.value}
@@ -43,19 +54,21 @@ export const MoodPicker: React.FC<MoodPickerProps> = ({ selectedMood, onMoodSele
                 animatedStyle,
                 styles.moodButton,
                 {
-                  backgroundColor: isSelected ? mood.color : theme.colors.surface,
+                  backgroundColor: isSelected
+                    ? mood.color
+                    : theme.colors.surface,
                   borderColor: isSelected ? mood.color : theme.colors.outline,
-                }
+                },
               ]}
               onPress={() => handleMoodPress(mood, index)}
               activeOpacity={0.8}
             >
               <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-              <Text 
-                variant="bodySmall" 
+              <Text
+                variant="bodySmall"
                 style={[
                   styles.moodLabel,
-                  { color: isSelected ? '#fff' : theme.colors.onSurface }
+                  { color: isSelected ? "#fff" : theme.colors.onSurface },
                 ]}
               >
                 {mood.label}
@@ -73,25 +86,25 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   moodContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    flexWrap: "wrap",
     gap: 10,
   },
   moodButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: 65,
     height: 65,
     borderRadius: 32.5,
     borderWidth: 2,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -102,7 +115,7 @@ const styles = StyleSheet.create({
   },
   moodLabel: {
     fontSize: 9,
-    textAlign: 'center',
-    fontWeight: '500',
+    textAlign: "center",
+    fontWeight: "500",
   },
 });
