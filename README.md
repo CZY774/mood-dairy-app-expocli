@@ -1,50 +1,35 @@
-# Welcome to your Expo app 👋
+# Mood Tracker App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+### A mobile application for tracking moods and viewing statistics.
 
-## Get started
+## Features
 
-1. Install dependencies
+* Mood tracking: log your moods and view a history of your entries
+* Statistics: view statistics about your moods, including charts and graphs
+* Export: export your data as a PDF
+* Customizable: customize the app's appearance and behavior using settings
 
-   ```bash
-   npm install
-   ```
+## Technical Details
 
-2. Start the app
+* Built using Expo, a framework for building universal apps
+* Uses React Native for building the app's UI
+* Utilizes various libraries and components, including React Native Paper, Expo Router, and Victory Charts
+* Supports both light and dark themes
 
-   ```bash
-   npx expo start
-   ```
+## Getting Started
 
-In the output, you'll find options to open the app in a
+1. Clone the repository: `git clone https://github.com/your-username/your-repo-name.git`
+2. Install dependencies: `npm install`
+3. Start the app: `npx expo start`
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Contributing
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Contributions are welcome! If you'd like to contribute to this project, please fork the repository and submit a pull request.
 
-## Get a fresh project
+## License
 
-When you're ready, run:
+This project is licensed under the MIT License.
 
-```bash
-npm run reset-project
-```
+## Acknowledgments
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Thanks to the Expo team for creating a great framework for building universal apps. Thanks also to the React Native and React Native Paper communities for their support and contributions.
