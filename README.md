@@ -8,13 +8,18 @@
 * Statistics: view statistics about your moods, including charts and graphs
 * Export: export your data as a PDF
 * Customizable: customize the app's appearance and behavior using settings
-
-## Technical Details
-
-* Built using Expo, a framework for building universal apps
-* Uses React Native for building the app's UI
-* Utilizes various libraries and components, including React Native Paper, Expo Router, and Victory Charts
 * Supports both light and dark themes
+
+## Tech Stack
+
+* [Expo](https://expo.dev/)
+* [React Native](https://reactnative.dev/)
+* [React Native Paper](https://reactnativepaper.com/)
+* [Expo Router](https://docs.expo.dev/versions/latest/sdk/router/)
+* [Victory Charts](https://nearform.com/open-source/victory/docs/api/victory-chart/)
+* [TypeScript](https://www.typescriptlang.org/)
+* [ESLint](https://eslint.org/)
+* [Babel](https://babeljs.io/)
 
 ## Getting Started
 
