@@ -27,6 +27,25 @@
 2. Install dependencies: `npm install`
 3. Start the app: `npx expo start`
 
+## Folder Structure
+```
+Mood Tracker App/
+├── app/              # Contains the main application code
+├── assets/           # Contains static assets like images and fonts
+├── components/       # Contains reusable components
+├── constants/        # Contains constant values used throughout the app
+├── hooks/            # Contains custom hooks
+├── lib/              # Contains utility functions and services
+├── scripts/          # Contains scripts for building and deploying the app
+├── app.json          # Expo configuration file
+├── eas.json          # EAS Build configuration file
+├── eslint.config.js
+├── metro.config.js   # Metro bundler configuration file
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
 ## <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="25px" alt="waving hand"> Get In Touch
 <div align="center">
   <a href="https://www.instagram.com/corneliusyoga" target="_blank"><img src="https://img.shields.io/badge/Instagram-%23E4405F.svg?&style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram"></a>&nbsp;
