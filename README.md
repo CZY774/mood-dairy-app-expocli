@@ -1,4 +1,4 @@
-# Mood Tracker App 👋
+# Mood Tracker App
 
 ### A mobile application for tracking moods and viewing statistics.
 
