@@ -3,11 +3,11 @@ import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import {
   VictoryChart,
+  VictoryLine,
   VictoryArea,
   VictoryAxis,
   VictoryTheme,
   VictoryScatter,
-  VictoryLine,
 } from "victory";
 import { MoodStats } from "../lib/types";
 import { getMoodColor } from "../lib/utils";
