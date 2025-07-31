@@ -1,18 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-} from "recharts";
+import Svg, { Path, Circle, Line, Text as SvgText } from "react-native-svg";
 import { MoodStats } from "../lib/types";
 import { getMoodColor } from "../lib/utils";
 
@@ -23,6 +12,8 @@ interface StatisticsChartProps {
 
 const { width: screenWidth } = Dimensions.get("window");
 const chartWidth = screenWidth - 64;
+const chartHeight = 180;
+const padding = { top: 20, right: 30, bottom: 40, left: 40 };
 
 export const StatisticsChart: React.FC<StatisticsChartProps> = ({
   stats,
@@ -51,15 +42,61 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
     );
   }
 
-  const chartData = stats.weeklyData.map((item, index) => ({
-    day: index + 1,
-    mood: item.mood,
-    date: item.date,
-    formattedDate: new Date(item.date).toLocaleDateString("id-ID", {
-      month: "short",
-      day: "numeric",
-    }),
-  }));
+  // Calculate chart dimensions
+  const innerWidth = chartWidth - padding.left - padding.right;
+  const innerHeight = chartHeight - padding.top - padding.bottom;
+
+  // Scale functions
+  const xScale = (index: number) =>
+    (index / (stats.weeklyData.length - 1)) * innerWidth;
+  const yScale = (mood: number) => innerHeight - ((mood - 1) / 4) * innerHeight;
+
+  // Generate path for the area chart
+  const generatePath = () => {
+    if (stats.weeklyData.length === 0) return "";
+
+    let path = `M ${padding.left} ${
+      padding.top + yScale(stats.weeklyData[0].mood)
+    }`;
+
+    stats.weeklyData.forEach((item, index) => {
+      if (index > 0) {
+        const x = padding.left + xScale(index);
+        const y = padding.top + yScale(item.mood);
+        path += ` L ${x} ${y}`;
+      }
+    });
+
+    // Close the area by going to the bottom
+    path += ` L ${padding.left + xScale(stats.weeklyData.length - 1)} ${
+      padding.top + innerHeight
+    }`;
+    path += ` L ${padding.left} ${padding.top + innerHeight} Z`;
+
+    return path;
+  };
+
+  // Generate line path
+  const generateLinePath = () => {
+    if (stats.weeklyData.length === 0) return "";
+
+    let path = `M ${padding.left} ${
+      padding.top + yScale(stats.weeklyData[0].mood)
+    }`;
+
+    stats.weeklyData.forEach((item, index) => {
+      if (index > 0) {
+        const x = padding.left + xScale(index);
+        const y = padding.top + yScale(item.mood);
+        path += ` L ${x} ${y}`;
+      }
+    });
+
+    return path;
+  };
+
+  const pathData = generatePath();
+  const lineData = generateLinePath();
 
   return (
     <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
@@ -131,36 +168,98 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
         </View>
 
         <View style={styles.chartContainer}>
-          <ResponsiveContainer width={chartWidth} height={200}>
-            <AreaChart data={chartData}>
-              <CartesianGrid
-                strokeDasharray="3 3"
+          <Svg width={chartWidth} height={chartHeight}>
+            {/* Grid lines */}
+            {[1, 2, 3, 4, 5].map((value) => (
+              <Line
+                key={value}
+                x1={padding.left}
+                y1={padding.top + yScale(value)}
+                x2={padding.left + innerWidth}
+                y2={padding.top + yScale(value)}
                 stroke={theme.colors.outline}
+                strokeWidth={0.5}
                 strokeOpacity={0.3}
               />
-              <XAxis
-                dataKey="formattedDate"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 10, fill: theme.colors.onSurfaceVariant }}
+            ))}
+
+            {/* Vertical grid lines */}
+            {stats.weeklyData.map((_, index) => (
+              <Line
+                key={index}
+                x1={padding.left + xScale(index)}
+                y1={padding.top}
+                x2={padding.left + xScale(index)}
+                y2={padding.top + innerHeight}
+                stroke={theme.colors.outline}
+                strokeWidth={0.5}
+                strokeOpacity={0.2}
               />
-              <YAxis
-                domain={[1, 5]}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: theme.colors.onSurfaceVariant }}
-              />
-              <Area
-                type="monotone"
-                dataKey="mood"
-                stroke={theme.colors.primary}
+            ))}
+
+            {/* Area fill */}
+            <Path
+              d={pathData}
+              fill={theme.colors.primaryContainer}
+              fillOpacity={0.3}
+            />
+
+            {/* Line */}
+            <Path
+              d={lineData}
+              fill="none"
+              stroke={theme.colors.primary}
+              strokeWidth={2}
+            />
+
+            {/* Data points */}
+            {stats.weeklyData.map((item, index) => (
+              <Circle
+                key={index}
+                cx={padding.left + xScale(index)}
+                cy={padding.top + yScale(item.mood)}
+                r={4}
+                fill={theme.colors.primary}
+                stroke={theme.colors.surface}
                 strokeWidth={2}
-                fill={theme.colors.primaryContainer}
-                fillOpacity={0.3}
-                dot={{ fill: theme.colors.primary, strokeWidth: 2, r: 4 }}
               />
-            </AreaChart>
-          </ResponsiveContainer>
+            ))}
+
+            {/* Y-axis labels */}
+            {[1, 2, 3, 4, 5].map((value) => (
+              <SvgText
+                key={value}
+                x={padding.left - 10}
+                y={padding.top + yScale(value) + 4}
+                fontSize="12"
+                fill={theme.colors.onSurfaceVariant}
+                textAnchor="end"
+              >
+                {value}
+              </SvgText>
+            ))}
+
+            {/* X-axis labels */}
+            {stats.weeklyData.map((item, index) => {
+              const date = new Date(item.date);
+              const label = date.toLocaleDateString("id-ID", {
+                month: "short",
+                day: "numeric",
+              });
+              return (
+                <SvgText
+                  key={index}
+                  x={padding.left + xScale(index)}
+                  y={padding.top + innerHeight + 20}
+                  fontSize="10"
+                  fill={theme.colors.onSurfaceVariant}
+                  textAnchor="middle"
+                >
+                  {label}
+                </SvgText>
+              );
+            })}
+          </Svg>
         </View>
 
         {stats.moodDistribution.length > 0 && (
