@@ -3,6 +3,12 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
+
+// Add SVG support
+config.resolver.assetExts.push('svg');
+// Add SVG support for source files
+config.resolver.sourceExts.push('svg');
+
 // Add wasm asset support
 config.resolver.assetExts.push('wasm');
  
