@@ -13,7 +13,6 @@ import { MoodEntry } from "../../components/MoodEntry";
 import { databaseService } from "../../lib/database";
 import { MoodStats, MoodEntry as MoodEntryType } from "../../lib/types";
 import { ACTIVITIES } from "../../constants/Moods";
-import VictoryTest from "@/components/VictoryTest";
 
 export default function StatisticsScreen() {
   const theme = useTheme();
@@ -101,7 +100,6 @@ export default function StatisticsScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <VictoryTest />
         <View style={styles.content}>
           <SegmentedButtons
             value={selectedPeriod}
