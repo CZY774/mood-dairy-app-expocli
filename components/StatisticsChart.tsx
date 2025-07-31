@@ -42,53 +42,107 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
     );
   }
 
+  // Validate and filter data
+  const validData = stats.weeklyData.filter(
+    (item) =>
+      item &&
+      typeof item.mood === "number" &&
+      !isNaN(item.mood) &&
+      item.mood >= 1 &&
+      item.mood <= 5
+  );
+
+  if (validData.length === 0) {
+    return (
+      <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <Text
+            variant="titleMedium"
+            style={[styles.title, { color: theme.colors.onSurface }]}
+          >
+            {title}
+          </Text>
+          <Text
+            variant="bodyMedium"
+            style={[styles.noData, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Data tidak valid untuk ditampilkan
+          </Text>
+        </Card.Content>
+      </Card>
+    );
+  }
+
   // Calculate chart dimensions
-  const innerWidth = chartWidth - padding.left - padding.right;
-  const innerHeight = chartHeight - padding.top - padding.bottom;
+  const innerWidth = Math.max(chartWidth - padding.left - padding.right, 100);
+  const innerHeight = Math.max(chartHeight - padding.top - padding.bottom, 100);
 
-  // Scale functions
-  const xScale = (index: number) =>
-    (index / (stats.weeklyData.length - 1)) * innerWidth;
-  const yScale = (mood: number) => innerHeight - ((mood - 1) / 4) * innerHeight;
+  // Safe scale functions with validation
+  const xScale = (index: number) => {
+    if (validData.length <= 1) return innerWidth / 2;
+    const scale = (index / (validData.length - 1)) * innerWidth;
+    return isNaN(scale) ? 0 : scale;
+  };
 
-  // Generate path for the area chart
+  const yScale = (mood: number) => {
+    if (isNaN(mood) || mood < 1 || mood > 5) return innerHeight;
+    const scale = innerHeight - ((mood - 1) / 4) * innerHeight;
+    return isNaN(scale) ? innerHeight : scale;
+  };
+
+  // Generate path for the area chart with validation
   const generatePath = () => {
-    if (stats.weeklyData.length === 0) return "";
+    if (validData.length === 0) return "";
 
-    let path = `M ${padding.left} ${
-      padding.top + yScale(stats.weeklyData[0].mood)
-    }`;
+    const startX = padding.left;
+    const startY = padding.top + yScale(validData[0].mood);
 
-    stats.weeklyData.forEach((item, index) => {
+    if (isNaN(startX) || isNaN(startY)) return "";
+
+    let path = `M ${startX} ${startY}`;
+
+    validData.forEach((item, index) => {
       if (index > 0) {
         const x = padding.left + xScale(index);
         const y = padding.top + yScale(item.mood);
-        path += ` L ${x} ${y}`;
+
+        if (!isNaN(x) && !isNaN(y)) {
+          path += ` L ${x} ${y}`;
+        }
       }
     });
 
     // Close the area by going to the bottom
-    path += ` L ${padding.left + xScale(stats.weeklyData.length - 1)} ${
-      padding.top + innerHeight
-    }`;
-    path += ` L ${padding.left} ${padding.top + innerHeight} Z`;
+    const lastX = padding.left + xScale(validData.length - 1);
+    const bottomY = padding.top + innerHeight;
+
+    if (!isNaN(lastX) && !isNaN(bottomY)) {
+      path += ` L ${lastX} ${bottomY}`;
+      path += ` L ${startX} ${bottomY} Z`;
+    }
 
     return path;
   };
 
-  // Generate line path
+  // Generate line path with validation
   const generateLinePath = () => {
-    if (stats.weeklyData.length === 0) return "";
+    if (validData.length === 0) return "";
 
-    let path = `M ${padding.left} ${
-      padding.top + yScale(stats.weeklyData[0].mood)
-    }`;
+    const startX = padding.left;
+    const startY = padding.top + yScale(validData[0].mood);
 
-    stats.weeklyData.forEach((item, index) => {
+    if (isNaN(startX) || isNaN(startY)) return "";
+
+    let path = `M ${startX} ${startY}`;
+
+    validData.forEach((item, index) => {
       if (index > 0) {
         const x = padding.left + xScale(index);
         const y = padding.top + yScale(item.mood);
-        path += ` L ${x} ${y}`;
+
+        if (!isNaN(x) && !isNaN(y)) {
+          path += ` L ${x} ${y}`;
+        }
       }
     });
 
@@ -123,7 +177,7 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
               variant="titleLarge"
               style={[styles.statValue, { color: theme.colors.primary }]}
             >
-              {stats.averageMood}/5
+              {isNaN(stats.averageMood) ? "0" : stats.averageMood}/5
             </Text>
           </View>
 
@@ -141,7 +195,7 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
               variant="titleLarge"
               style={[styles.statValue, { color: theme.colors.primary }]}
             >
-              {stats.totalEntries}
+              {stats.totalEntries || 0}
             </Text>
           </View>
 
@@ -162,7 +216,7 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
                 { color: getMoodColor(stats.mostCommonMood) },
               ]}
             >
-              {stats.mostCommonMood}/5
+              {isNaN(stats.mostCommonMood) ? "0" : stats.mostCommonMood}/5
             </Text>
           </View>
         </View>
@@ -170,99 +224,133 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
         <View style={styles.chartContainer}>
           <Svg width={chartWidth} height={chartHeight}>
             {/* Grid lines */}
-            {[1, 2, 3, 4, 5].map((value) => (
-              <Line
-                key={value}
-                x1={padding.left}
-                y1={padding.top + yScale(value)}
-                x2={padding.left + innerWidth}
-                y2={padding.top + yScale(value)}
-                stroke={theme.colors.outline}
-                strokeWidth={0.5}
-                strokeOpacity={0.3}
-              />
-            ))}
+            {[1, 2, 3, 4, 5].map((value) => {
+              const y = padding.top + yScale(value);
+              if (isNaN(y)) return null;
+
+              return (
+                <Line
+                  key={value}
+                  x1={padding.left}
+                  y1={y}
+                  x2={padding.left + innerWidth}
+                  y2={y}
+                  stroke={theme.colors.outline}
+                  strokeWidth={0.5}
+                  strokeOpacity={0.3}
+                />
+              );
+            })}
 
             {/* Vertical grid lines */}
-            {stats.weeklyData.map((_, index) => (
-              <Line
-                key={index}
-                x1={padding.left + xScale(index)}
-                y1={padding.top}
-                x2={padding.left + xScale(index)}
-                y2={padding.top + innerHeight}
-                stroke={theme.colors.outline}
-                strokeWidth={0.5}
-                strokeOpacity={0.2}
-              />
-            ))}
+            {validData.map((_, index) => {
+              const x = padding.left + xScale(index);
+              if (isNaN(x)) return null;
+
+              return (
+                <Line
+                  key={index}
+                  x1={x}
+                  y1={padding.top}
+                  x2={x}
+                  y2={padding.top + innerHeight}
+                  stroke={theme.colors.outline}
+                  strokeWidth={0.5}
+                  strokeOpacity={0.2}
+                />
+              );
+            })}
 
             {/* Area fill */}
-            <Path
-              d={pathData}
-              fill={theme.colors.primaryContainer}
-              fillOpacity={0.3}
-            />
+            {pathData && (
+              <Path
+                d={pathData}
+                fill={theme.colors.primaryContainer}
+                fillOpacity={0.3}
+              />
+            )}
 
             {/* Line */}
-            <Path
-              d={lineData}
-              fill="none"
-              stroke={theme.colors.primary}
-              strokeWidth={2}
-            />
-
-            {/* Data points */}
-            {stats.weeklyData.map((item, index) => (
-              <Circle
-                key={index}
-                cx={padding.left + xScale(index)}
-                cy={padding.top + yScale(item.mood)}
-                r={4}
-                fill={theme.colors.primary}
-                stroke={theme.colors.surface}
+            {lineData && (
+              <Path
+                d={lineData}
+                fill="none"
+                stroke={theme.colors.primary}
                 strokeWidth={2}
               />
-            ))}
+            )}
+
+            {/* Data points */}
+            {validData.map((item, index) => {
+              const cx = padding.left + xScale(index);
+              const cy = padding.top + yScale(item.mood);
+
+              if (isNaN(cx) || isNaN(cy)) return null;
+
+              return (
+                <Circle
+                  key={index}
+                  cx={cx}
+                  cy={cy}
+                  r={4}
+                  fill={theme.colors.primary}
+                  stroke={theme.colors.surface}
+                  strokeWidth={2}
+                />
+              );
+            })}
 
             {/* Y-axis labels */}
-            {[1, 2, 3, 4, 5].map((value) => (
-              <SvgText
-                key={value}
-                x={padding.left - 10}
-                y={padding.top + yScale(value) + 4}
-                fontSize="12"
-                fill={theme.colors.onSurfaceVariant}
-                textAnchor="end"
-              >
-                {value}
-              </SvgText>
-            ))}
+            {[1, 2, 3, 4, 5].map((value) => {
+              const y = padding.top + yScale(value) + 4;
+              if (isNaN(y)) return null;
 
-            {/* X-axis labels */}
-            {stats.weeklyData.map((item, index) => {
-              const date = new Date(item.date);
-              const label = date.toLocaleDateString("id-ID", {
-                month: "short",
-                day: "numeric",
-              });
               return (
                 <SvgText
-                  key={index}
-                  x={padding.left + xScale(index)}
-                  y={padding.top + innerHeight + 20}
-                  fontSize="10"
+                  key={value}
+                  x={padding.left - 10}
+                  y={y}
+                  fontSize="12"
                   fill={theme.colors.onSurfaceVariant}
-                  textAnchor="middle"
+                  textAnchor="end"
                 >
-                  {label}
+                  {value}
                 </SvgText>
               );
+            })}
+
+            {/* X-axis labels */}
+            {validData.map((item, index) => {
+              const x = padding.left + xScale(index);
+              if (isNaN(x)) return null;
+
+              try {
+                const date = new Date(item.date);
+                const label = date.toLocaleDateString("id-ID", {
+                  month: "short",
+                  day: "numeric",
+                });
+
+                return (
+                  <SvgText
+                    key={index}
+                    x={x}
+                    y={padding.top + innerHeight + 20}
+                    fontSize="10"
+                    fill={theme.colors.onSurfaceVariant}
+                    textAnchor="middle"
+                  >
+                    {label}
+                  </SvgText>
+                );
+              } catch (error) {
+                return null;
+              }
             })}
           </Svg>
         </View>
 
-        {stats.moodDistribution.length > 0 && (
+        {stats.moodDistribution && stats.moodDistribution.length > 0 && (
           <View style={styles.distributionContainer}>
             <Text
               variant="titleSmall"
@@ -274,40 +362,46 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
               Distribusi Mood
             </Text>
             <View style={styles.distributionBars}>
-              {stats.moodDistribution.map((item) => (
-                <View key={item.mood} style={styles.distributionItem}>
-                  <View
-                    style={[
-                      styles.distributionBar,
-                      {
-                        backgroundColor: getMoodColor(item.mood),
-                        height: Math.max(
-                          (item.count / stats.totalEntries) * 60,
-                          8
-                        ),
-                      },
-                    ]}
-                  />
-                  <Text
-                    variant="bodySmall"
-                    style={[
-                      styles.distributionLabel,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    {item.mood}
-                  </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={[
-                      styles.distributionCount,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    {item.count}
-                  </Text>
-                </View>
-              ))}
+              {stats.moodDistribution.map((item) => {
+                if (!item || isNaN(item.mood) || isNaN(item.count)) return null;
+
+                const height = Math.max(
+                  (item.count / (stats.totalEntries || 1)) * 60,
+                  8
+                );
+
+                return (
+                  <View key={item.mood} style={styles.distributionItem}>
+                    <View
+                      style={[
+                        styles.distributionBar,
+                        {
+                          backgroundColor: getMoodColor(item.mood),
+                          height: isNaN(height) ? 8 : height,
+                        },
+                      ]}
+                    />
+                    <Text
+                      variant="bodySmall"
+                      style={[
+                        styles.distributionLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      {item.mood}
+                    </Text>
+                    <Text
+                      variant="bodySmall"
+                      style={[
+                        styles.distributionCount,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      {item.count}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
           </View>
         )}
