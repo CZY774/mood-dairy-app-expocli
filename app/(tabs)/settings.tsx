@@ -193,13 +193,13 @@ export default function SettingsScreen() {
 
               <List.Item
                 title="Versi"
-                description="1.0.0"
+                description="1.0.5"
                 left={(props) => <List.Icon {...props} icon="tag" />}
               />
 
               <List.Item
                 title="Developer"
-                description="React Native Developer"
+                description="Cornelius Yoga"
                 left={(props) => <List.Icon {...props} icon="account-circle" />}
               />
             </Card.Content>
