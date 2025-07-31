@@ -7,6 +7,7 @@ import {
   VictoryAxis,
   VictoryTheme,
   VictoryScatter,
+  VictoryLine,
 } from "victory";
 import { MoodStats } from "../lib/types";
 import { getMoodColor } from "../lib/utils";
