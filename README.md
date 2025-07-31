@@ -16,7 +16,6 @@
 * [React Native](https://reactnative.dev/)
 * [React Native Paper](https://reactnativepaper.com/)
 * [Expo Router](https://docs.expo.dev/versions/latest/sdk/router/)
-* [Victory Charts](https://nearform.com/open-source/victory/docs/api/victory-chart/)
 * [TypeScript](https://www.typescriptlang.org/)
 * [ESLint](https://eslint.org/)
 * [Babel](https://babeljs.io/)
