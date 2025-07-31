@@ -2,13 +2,17 @@ import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import {
-  VictoryChart,
-  VictoryLine,
-  VictoryArea,
-  VictoryAxis,
-  VictoryTheme,
-  VictoryScatter,
-} from "victory";
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+} from "recharts";
 import { MoodStats } from "../lib/types";
 import { getMoodColor } from "../lib/utils";
 
@@ -48,9 +52,13 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
   }
 
   const chartData = stats.weeklyData.map((item, index) => ({
-    x: index + 1,
-    y: item.mood,
+    day: index + 1,
+    mood: item.mood,
     date: item.date,
+    formattedDate: new Date(item.date).toLocaleDateString("id-ID", {
+      month: "short",
+      day: "numeric",
+    }),
   }));
 
   return (
@@ -123,62 +131,36 @@ export const StatisticsChart: React.FC<StatisticsChartProps> = ({
         </View>
 
         <View style={styles.chartContainer}>
-          <VictoryChart
-            theme={VictoryTheme.material}
-            width={chartWidth}
-            height={200}
-            padding={{ left: 50, top: 20, right: 50, bottom: 50 }}
-          >
-            <VictoryAxis
-              dependentAxis
-              domain={[1, 5]}
-              tickCount={5}
-              style={{
-                axis: { stroke: theme.colors.outline },
-                tickLabels: {
-                  fill: theme.colors.onSurfaceVariant,
-                  fontSize: 12,
-                },
-                grid: { stroke: theme.colors.outline, strokeOpacity: 0.3 },
-              }}
-            />
-
-            <VictoryAxis
-              style={{
-                axis: { stroke: theme.colors.outline },
-                tickLabels: {
-                  fill: theme.colors.onSurfaceVariant,
-                  fontSize: 10,
-                },
-                grid: { stroke: theme.colors.outline, strokeOpacity: 0.3 },
-              }}
-              tickFormat={() => ""}
-            />
-
-            <VictoryArea
-              data={chartData}
-              style={{
-                data: {
-                  fill: theme.colors.primaryContainer,
-                  fillOpacity: 0.3,
-                  stroke: theme.colors.primary,
-                  strokeWidth: 2,
-                },
-              }}
-              animate={{
-                duration: 1000,
-                onLoad: { duration: 500 },
-              }}
-            />
-
-            <VictoryScatter
-              data={chartData}
-              size={4}
-              style={{
-                data: { fill: theme.colors.primary },
-              }}
-            />
-          </VictoryChart>
+          <ResponsiveContainer width={chartWidth} height={200}>
+            <AreaChart data={chartData}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={theme.colors.outline}
+                strokeOpacity={0.3}
+              />
+              <XAxis
+                dataKey="formattedDate"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: theme.colors.onSurfaceVariant }}
+              />
+              <YAxis
+                domain={[1, 5]}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: theme.colors.onSurfaceVariant }}
+              />
+              <Area
+                type="monotone"
+                dataKey="mood"
+                stroke={theme.colors.primary}
+                strokeWidth={2}
+                fill={theme.colors.primaryContainer}
+                fillOpacity={0.3}
+                dot={{ fill: theme.colors.primary, strokeWidth: 2, r: 4 }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </View>
 
         {stats.moodDistribution.length > 0 && (
