@@ -16,6 +16,7 @@ import { databaseService } from "../../lib/database";
 import { formatDate } from "../../lib/utils";
 import { MoodEntry as MoodEntryType } from "../../lib/types";
 import { ACTIVITIES } from "../../constants/Moods";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -26,6 +27,7 @@ export default function HomeScreen() {
   const [todayEntry, setTodayEntry] = useState<MoodEntryType | null>(null);
   const [recentEntries, setRecentEntries] = useState<MoodEntryType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation();
 
   const today = formatDate(new Date());
 
@@ -234,6 +236,17 @@ export default function HomeScreen() {
           )}
         </View>
       </ScrollView>
+      <FAB
+        icon="plus"
+        style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+        onPress={() => {
+          setSelectedMood(null);
+          setSelectedMoodEmoji("");
+          setSelectedActivities([]);
+          setNotes("");
+          setTodayEntry(null);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -282,5 +295,11 @@ const styles = StyleSheet.create({
   recentTitle: {
     marginBottom: 16,
     fontWeight: "600",
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 });
