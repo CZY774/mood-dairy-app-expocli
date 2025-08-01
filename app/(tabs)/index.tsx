@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Alert,
-  RefreshControl,
-} from "react-native";
+import { ScrollView, StyleSheet, View, Alert } from "react-native";
 import {
   Appbar,
   Text,
@@ -34,7 +28,6 @@ export default function HomeScreen() {
   const [recentEntries, setRecentEntries] = useState<MoodEntryType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
-  const [refreshing, setRefreshing] = useState(false);
 
   const today = formatDate(new Date());
 
@@ -101,10 +94,6 @@ export default function HomeScreen() {
 
       await databaseService.addMoodEntry(entry);
 
-      // Refresh today's entry and recent entries
-      await loadTodayEntry();
-      await loadRecentEntries();
-
       Alert.alert(
         "Berhasil Disimpan!",
         todayEntry
@@ -164,12 +153,6 @@ export default function HomeScreen() {
     setTodayEntry(null);
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await Promise.all([loadTodayEntry(), loadRecentEntries()]);
-    setRefreshing(false);
-  };
-
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -181,9 +164,6 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
       >
         <View style={styles.content}>
           <Text
