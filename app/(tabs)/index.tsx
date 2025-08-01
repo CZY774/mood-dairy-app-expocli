@@ -145,6 +145,14 @@ export default function HomeScreen() {
     );
   };
 
+  const handleNewEntry = () => {
+    setSelectedMood(null);
+    setSelectedMoodEmoji("");
+    setSelectedActivities([]);
+    setNotes("");
+    setTodayEntry(null);
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -247,6 +255,12 @@ export default function HomeScreen() {
           setTodayEntry(null);
         }}
       />
+      <FAB
+        icon="plus"
+        style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+        onPress={handleNewEntry}
+        label={!todayEntry ? "Buat Catatan Baru" : "Reset Form"}
+      />
     </SafeAreaView>
   );
 }
@@ -301,5 +315,8 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
   },
 });
